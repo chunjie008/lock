@@ -1,4 +1,4 @@
-#分布式锁学习笔记
+# 分布式锁学习笔记
 
 ## 1	分布式锁实现方式
  ![](http://www.ycnote.com/content/plugins/kl_album/upload/201905/ba440690dc76f30c946599328bb03fcc201905161052231053355894.png)  
@@ -28,11 +28,14 @@ Zookeeper实现分布式锁有多种方式，网上有一实现方式有羊群�
 ### 	基本原理：
    一个锁对应一个基本节点，每一个线程来获取锁，会在基本节点下，创建一个有序的临时节点。while判断自己的序临时节点序为是自小的，如果是就获取到了这把锁进行return，如果不是watch监听自己前一个节点。当前线程进入wait状态。
 	
-	watch如果监听到前一个节点被删除，会notify 通知wait状态的线程。线程结束wait状态。进入while循环获取到锁，或者变更监听的节点。
+  watch如果监听到前一个节点被删除，会notify 通知wait状态的线程。线程结束wait状态。进入while循环获取到锁，或者变更监听的节点。
 
-	其余特性比如保证可重入，超时自动释放，等未作深入研究，欢迎大家补充。
+  其余特性比如保证可重入，超时自动释放，等未作深入研究，欢迎大家补充。
 	
 以下是Curator部分源码对基本原理的验证：
+
+###    备注
+  当前 zookeeper 的稳定版本是3.4，Curator官方推荐的zookeeper版本是3.5说3.5已经在很多生产环境使用了。Curator最新版本4.2支持zookeeper3.5，同时支持zookeeper3.4。如果使用的的zookeeper3.4需要在Curator中忽略zookeeper客户端3.5版本强制指定3.4
 
 String attemptLock(long time, TimeUnit unit, byte[] lockNodeBytes) throws Exception
 {
